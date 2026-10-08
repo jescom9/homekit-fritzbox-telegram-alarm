@@ -1,0 +1,26 @@
+# Optional Home Assistant package. Outside packages/ so it is not loaded by default.
+# Replace device_tracker.REPLACE_WITH_YOUR_PHONE before copying to /config/packages/.
+# Disabled at startup even after copying; enable manually after testing.
+# This is a reminder for ONE phone, not proof that the household is empty.
+automation:
+  - id: home_alarm_fritz_presence_reminder
+    alias: "Home alarm - FRITZ phone-away reminder"
+    initial_state: false
+    triggers:
+      - trigger: state
+        entity_id: device_tracker.REPLACE_WITH_YOUR_PHONE
+        from: "home"
+        to: "not_home"
+        for: "00:10:00"
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.alarmo
+        state: "disarmed"
+    actions:
+      - action: notify.send_message
+        data:
+          entity_id: !secret telegram_notify_entity
+          message: >-
+            Your phone has appeared away for ten minutes and the alarm is disarmed.
+            If everyone has left, consider arming it in Apple Home.
+    mode: single

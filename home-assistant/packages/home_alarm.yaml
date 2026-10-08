@@ -1,0 +1,45 @@
+# Requires Alarmo and the Telegram bot integration to be configured first.
+# Replace every alarm_control_panel.alarmo reference if your entity ID differs.
+# This YAML defines a separate bridge. Avoid exporting this alarm on another bridge.
+homekit:
+  - name: Home Alarm Bridge
+    port: 21064
+    filter:
+      include_entities:
+        - alarm_control_panel.alarmo
+    entity_config:
+      alarm_control_panel.alarmo:
+        name: Home Alarm
+        code: !secret homekit_alarm_code
+
+automation:
+  - id: home_alarm_telegram_triggered
+    alias: "Home alarm - Telegram alert"
+    description: "Send an alert when Alarmo enters its triggered state."
+    triggers:
+      - trigger: state
+        entity_id: alarm_control_panel.alarmo
+        to: "triggered"
+    actions:
+      - action: notify.send_message
+        data:
+          entity_id: !secret telegram_notify_entity
+          message: >-
+            Home alarm triggered at {{ now().strftime('%Y-%m-%d %H:%M:%S %Z') }}.
+            Check your home and the Alarmo dashboard.
+    mode: single
+
+  - id: home_alarm_telegram_unavailable
+    alias: "Home alarm - unavailable alert"
+    description: "Report an unavailable Alarmo entity while Home Assistant is running."
+    triggers:
+      - trigger: state
+        entity_id: alarm_control_panel.alarmo
+        to: "unavailable"
+        for: "00:02:00"
+    actions:
+      - action: notify.send_message
+        data:
+          entity_id: !secret telegram_notify_entity
+          message: "Home alarm has been unavailable for two minutes. Check Home Assistant."
+    mode: single

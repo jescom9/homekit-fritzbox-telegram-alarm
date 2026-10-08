@@ -1,0 +1,5 @@
+# Merge into your existing configuration.yaml. Do not replace the whole file.
+# If homeassistant: already exists, add packages: under that existing key.
+# If packages are already enabled, use the existing packages folder instead.
+homeassistant:
+  packages: !include_dir_named packages

@@ -1,0 +1,18 @@
+# Never publish live Home Assistant configuration or credentials.
+secrets.yaml
+configuration.yaml
+.env
+.env.*
+!.env.example
+.storage/
+home-assistant/.storage/
+*.db
+*.db-*
+*.log
+*.log.*
+backups/
+*.tar
+*.tar.gz
+__pycache__/
+.venv/
+.DS_Store
